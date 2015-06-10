@@ -1,0 +1,14 @@
+#! /usr/bin/perl -w
+use 5.018;
+use strict;
+
+system "erlc dsvr.erl";
+die if $?;
+
+if($#ARGV == 0 and $ARGV[0] eq "run"){
+	say "RUNING SERVER  ...";
+	system "erl -pa proto -noshell -s dsvr start -s init stop";
+} else {
+	system "erl -pa proto -noshell -s dsvr record_test -s init stop";
+}
+
