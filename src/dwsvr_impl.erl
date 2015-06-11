@@ -6,13 +6,6 @@
 -include("msgids.hrl").
 -include("common.hrl").
 
-%% This file shall be read from configuration file.>>
--define(World_HOST, "192.168.1.106").
--define(World_PORT, 12000).
--define(World_SvrID, 1008).
--define(World_NAME,  "Erlang World Server").
-
-
 %% The master entry is here>>
 start()->
 	case gen_tcp:listen(?SVR_PORT,
@@ -73,10 +66,10 @@ serv_loopbody(Socket, L)->
 serv_distribute(Socket, ID, Payload)->
 	case ID of
 		?MsgID_RequestWorldList ->
-			handle_response_worldlist(Socket),
+			dir:handle_response_worldlist(Socket),
 			serv_loop(Socket);
 		?MsgID_RequestUserRegister ->
-			handle_response_userregister(Socket, Payload),
+			dir:handle_response_userregister(Socket, Payload),
 			serv_loop(Socket);
 		?MsgID_RequestLogin ->
 			world:handle_response_requestlogin(Socket, Payload),
@@ -86,36 +79,6 @@ serv_distribute(Socket, ID, Payload)->
 			exit(not_implemented_yet)
 	end.
 
-%% The handlers for 
-handle_response_worldlist(Sock)->
-	Response = #responseworldlist{ 
-		world_list = [ 
-			#data_worldinfo{
-				host = ?World_HOST,
-				port = ?World_PORT,
-				id   = ?World_SvrID,
-				name = ?World_NAME
-			}
-		]
-	},
-	ResBin = iolist_to_binary(
-		cs_dir_pb:encode_responseworldlist(Response)
-	),
-	Length = byte_size(ResBin) + 8 + ?LEN_FIX,
-	FullBin = <<Length:32/big, 
-		(?MsgID_ResponseWorldList):32/big, ResBin/binary>>,
-	%io:format("Response:~p~n", [FullBin]),
-	gen_tcp:send(Sock, FullBin).
-
-handle_response_userregister(Sock, Payload)->
-	Register = cs_dir_pb:decode_requestuserregister(Payload),
-	#requestuserregister{account=Account, password=Password} = Register,
-	io:format("Register User for <~p>:<~p>~n",[Account, Password]),
-	ResBin = iolist_to_binary(
-		cs_dir_pb:encode_responseuserregister(#responseuserregister{})
-	),
-	Length = byte_size(ResBin) + 8 + ?LEN_FIX,
-	gen_tcp:send(Sock, <<Length:32/big, (?MsgID_ResponseUserRegister):32/big, ResBin/binary>>).
 
 %The old one: complies only with ERLANG client.	
 %serv_loop(Sock)->

@@ -4,16 +4,16 @@ use strict;
 
 sub compile{
 	for(@_){
-		my $cmd = "erlc $_.erl";
+		my $cmd = "erlc ./handlers/$_.erl";
 		say "compiling $_.erl";
 		system $cmd;
 		die if $?;
 	}
 }
 
-compile qw/world/;
+compile qw/world dir/;
+exit 0 if $#ARGV != 0;
 
-die if $#ARGV != 0;
 my $l = $ARGV[0];
 system "erlc ${l}svr.erl";
 die if $?;
