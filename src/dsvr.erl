@@ -3,7 +3,7 @@
 %%% Sherlock Holmes ??
 
 -module(dsvr).
--export([start/0, record_test/0]).
+-export([start/0]).
 
 -define(PORT, 11000).
 -define(LENGTH_WIDTH, 4).
@@ -18,21 +18,6 @@
 -define(World_PORT, 12000).
 -define(World_SvrID, 1008).
 -define(World_NAME,  "Erlang World Server").
-
-record_test()->
-	iolist_to_binary(
-		cs_dir_pb:encode_responseworldlist(#responseworldlist{ 
-			world_list = [ 
-				#data_worldinfo{
-					host = "192.168.1.106",
-					port = 12000,  
-					id   = 1008,
-					name = "Erlang World Server"
-				}
-			]
-		})
-	),
-	ok.
 
 %% The master entry is here>>
 start()->
