@@ -1,6 +1,4 @@
--module(dsvr).
+-module(wsvr).
 -export([start/0]).
--define(SVR_PORT, 11000).
+-define(SVR_PORT, 12000).
 -include("dwsvr_impl.erl").
-
-
