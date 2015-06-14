@@ -6,13 +6,24 @@
 -include("msgids.hrl").
 -include("common.hrl").
 
+-ifdef(ActiveGo).
+-	define(ActiveOn, true).
+-	define(PrePacketSize, 4).
+-	define(WELCOME, "Active Mode").
+-else.
+-	define(ActiveOn, false).
+-	define(PrePacketSize, 0).
+-	define(WELCOME, "Non-active").
+-endif.
+
 %% The master entry is here>>
-start()->
+start() ->
+	io:format("~p~n", [?WELCOME]),
 	case gen_tcp:listen(?SVR_PORT,
 		[ binary,
-		  {packet, 0 } ,
+		  {packet, ?PrePacketSize} ,
 		  {reuseaddr, true } ,
-		  {active, false }
+		  {active, ?ActiveOn}
 		]
 	) of
 	{ok, Listen} ->
@@ -38,18 +49,10 @@ wait_and_serv(Listen)->
 			serv_loop(Sock)
 	end.
 
-%New one>>
-%
-%serv_loop(Sock)->
-%	receive 
-%		{tcp, Sock, Bin} ->
-%			<<MsgID:32/big, Payload/binary>> = Bin,
-%			serv_distribute(Sock, MsgID, Payload);
-%		{tcp_closed, Sock} ->
-%			io:format("Disconnected~n"),
-%			ok
-%	end.
-%% {ok, Bin} or {error, Reason}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%PASSIVE MODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-ifndef(ActiveGo).
 
 serv_loop(Socket)->
 	case gen_tcp:recv(Socket, 4) of 
@@ -62,6 +65,22 @@ serv_loop(Socket)->
 serv_loopbody(Socket, L)->
 	{ok, <<MsgID:32/big, Payload/binary>>} = gen_tcp:recv(Socket, L - 4 - ?LEN_FIX),
 	serv_distribute(Socket, MsgID, Payload).
+
+-else.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ACTIVE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+serv_loop(Socket)->
+	receive
+		{tcp, Socket, Bin} ->
+			<<MsgID:32/big, Payload/binary>> = Bin,
+			serv_distribute(Socket, MsgID, Payload);
+		{tcp_closed, Socket}->
+			void
+	end.
+
+-endif.
 
 serv_distribute(Socket, ID, Payload)->
 	case ID of

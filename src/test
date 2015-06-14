@@ -11,6 +11,10 @@ sub compile{
 	}
 }
 
+# Start here>
+system "erlc funs.erl";
+die if $?;
+
 compile qw/world dir/;
 exit 0 if $#ARGV != 0;
 

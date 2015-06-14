@@ -20,5 +20,4 @@ handle_response_requestlogin(Socket, Payload)->
 		)
 	),
 	Length = byte_size(ResBin) + 8 + ?LEN_FIX,
-	gen_tcp:send(Socket, <<Length:32/big, (?MsgID_ResponseLogin):32/big, ResBin/binary>>).
-	
+	ok = gen_tcp:send(Socket, funs:make_bin(Length, ?MsgID_ResponseLogin, ResBin)).
