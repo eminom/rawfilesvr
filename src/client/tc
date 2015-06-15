@@ -1,0 +1,13 @@
+#!/usr/bin/perl -w
+
+use strict;
+use 5.018;
+
+#say "compiling client...";
+system "erlc client.erl";
+die if $?;
+
+#say "launch client test >>";
+my $cmd = "erl -noshell -pa ../proto -s client start -s init stop";
+system $cmd;
+
