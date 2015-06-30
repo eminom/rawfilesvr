@@ -6,7 +6,7 @@
 -module(client).
 -export([start/0]).
 
--define(HOST, "192.168.1.105").
+-define(HOST, "192.168.1.107").
 -define(PORT,  11000).
 
 -include("../msgids.hrl").
