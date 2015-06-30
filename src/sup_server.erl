@@ -12,7 +12,8 @@
 -export([
 	start_link/0,
 	get_accept_count/0,
-	get_client_history/0
+	get_client_history/0,
+	print_log/0
 	]
 	).
 
@@ -37,6 +38,17 @@ get_accept_count()->
 get_client_history()->
 	{ok, ClientHistory} = gen_server:call(?SERVER, fetch_client_history),
 	ClientHistory.
+
+print_log()->
+	print_log( get_client_history() ).
+
+print_log([{{Address, Port}, {Y, M, Day}, {Hr, Mn, S}}|T])->
+	{A,B,C,D} = Address,
+	io:format("<~p.~p.~p.~p:~p> logged on at ~p-~p-~p,  ~p:~p:~p~n", [A,B,C, D , Port, Y, M, Day, Hr, Mn, S]),
+	print_log(T);
+
+print_log([])->
+	ok.
 
 start_link()->
 	State = #server_state{port = ?PORT, loop=[?DirServer, ?WorldServer]},
