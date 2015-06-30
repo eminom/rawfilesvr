@@ -17,7 +17,7 @@
 -endif.
 
 %% The master entry is here>>
-start() ->
+start(SupServer) ->
 	io:format("~p~n", [?WELCOME]),
 	case gen_tcp:listen(?SVR_PORT,
 		[ binary,
@@ -27,7 +27,7 @@ start() ->
 		]
 	) of
 	{ok, Listen} ->
-		spawn(fun()->wait_and_serv(Listen) end),
+		spawn(fun()->wait_and_serv(Listen, SupServer) end),
 		noop_loop();
 	{error, Reason} ->
 		io:format("Error starting server:<~p>~n", [Reason]),
@@ -41,10 +41,11 @@ noop_loop()->
 	end,
 	noop_loop().
 
-wait_and_serv(Listen)->
+wait_and_serv(Listen, SupServer)->
 	case gen_tcp:accept(Listen) of 
 		{ok, Sock} ->
-			spawn(fun() -> wait_and_serv(Listen) end),
+			ok = gen_server:cast(SupServer, accept_once_more),
+			spawn(fun() -> wait_and_serv(Listen, SupServer) end),
 			%io:format("New connection established ~n"),
 			serv_loop(Sock)
 	end.
