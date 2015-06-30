@@ -44,7 +44,8 @@ noop_loop()->
 wait_and_serv(Listen, SupServer)->
 	case gen_tcp:accept(Listen) of 
 		{ok, Sock} ->
-			ok = gen_server:cast(SupServer, accept_once_more),
+			{ok, {Address, Port}} = inet:peername(Sock),
+			ok = gen_server:cast(SupServer, {accept_once_more, {{Address, Port}, date(), time()}}),
 			spawn(fun() -> wait_and_serv(Listen, SupServer) end),
 			%io:format("New connection established ~n"),
 			serv_loop(Sock)
