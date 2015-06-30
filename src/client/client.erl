@@ -18,15 +18,22 @@ start()->
 	explore_dir().
 
 explore_dir()->
-	{ok, Socket} = gen_tcp:connect(?HOST, ?PORT,
+	case gen_tcp:connect(?HOST, ?PORT,
 		[binary, 
 			{packet, 4}  % And this is very necessary.
 			%There is no need for {active, true}. %I am active by default
 		]
-	),
-	dir_test_registeruser(Socket),
-	{ok, Host, Port, Name, Id} = dir_pull_worldlist(Socket),
-	explore_world(Host, Port, Name, Id).
+	)
+		of
+		{ok, Socket}->
+			dir_test_registeruser(Socket),
+			{ok, Host, Port, Name, Id} = dir_pull_worldlist(Socket),
+			explore_world(Host, Port, Name, Id);
+		{error, Reason}->
+			io:format("Error:<~p>~n",[Reason]),
+			ok
+	end.
+
 
 dir_test_registeruser(Socket)->
 	Bin = iolist_to_binary(cs_dir_pb:encode_requestuserregister(
