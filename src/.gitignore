@@ -1,4 +1,6 @@
 *.dump
 *.beam
-*.hrl
 *.swp
+proto/cs_dir_pb.hrl
+proto/cs_world_pb.hrl
+proto/data_pb.hrl
