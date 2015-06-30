@@ -43,8 +43,8 @@ print_log()->
 	print_log( get_client_history() ).
 
 print_log([{{Address, Port}, {Y, M, Day}, {Hr, Mn, S}}|T])->
-	{A,B,C,D} = Address,
-	io:format("<~p.~p.~p.~p:~p> logged on at ~p-~p-~p,  ~p:~p:~p~n", [A,B,C, D , Port, Y, M, Day, Hr, Mn, S]),
+	{Adot,Bdot,Cdot,Ddot} = Address,
+	io:format("<~p.~p.~p.~p:~p> logged on at ~p-~p-~p,  ~p:~p:~p~n", [Adot,Bdot,Cdot, Ddot , Port, Y, M, Day, Hr, Mn, S]),
 	print_log(T);
 
 print_log([])->
