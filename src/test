@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-use 5.018;
+use 5.010;
 use strict;
 
 sub compile{
@@ -16,12 +16,28 @@ system "erlc funs.erl";
 die if $?;
 
 compile qw/world dir/;
-exit 0 if $#ARGV != 0;
+#exit 0 if $#ARGV != 0;
 
-my $l = $ARGV[0];
-system "erlc ${l}svr.erl";
+#my $l = $ARGV[0];
+#system "erlc ${l}svr.erl";
+#die if $?;
+
+for my$l("w","d"){
+	system "erlc ${l}svr.erl";
+	die if $?;
+}
+
+#
+#say "RUNING SERVER  ...";
+#system "erl -pa proto -noshell -s ${l}svr start -s init stop";
+
+# Before the introduction to gen_server,
+# we use standalone wsvr and dsvr test.
+# But since wsvr and dsvr interact with sup_server
+# We need to altar our test method.
+
+system "erl -pa proto -s sup_server start_link";
 die if $?;
 
-say "RUNING SERVER  ...";
-system "erl -pa proto -noshell -s ${l}svr start -s init stop";
+
 
