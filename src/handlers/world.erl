@@ -1,9 +1,9 @@
 
 -module(world).
 -export([handle_response_requestlogin/2]).
--include("proto/cs_world_pb.hrl").
--include("msgids.hrl").
--include("common.hrl").
+-include("../proto/cs_world_pb.hrl").
+-include("../msgids.hrl").
+-include("../common.hrl").
 
 handle_response_requestlogin(Socket, Payload)->
 	#requestlogin{

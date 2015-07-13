@@ -4,9 +4,9 @@
 -export([handle_response_worldlist/1,
 	handle_response_userregister/2]).
 
--include("proto/cs_dir_pb.hrl").
--include("msgids.hrl").
--include("common.hrl").
+-include("../proto/cs_dir_pb.hrl").
+-include("../msgids.hrl").
+-include("../common.hrl").
 
 %% This file shall be read from configuration file.>>
 -define(World_HOST, "192.168.1.105").

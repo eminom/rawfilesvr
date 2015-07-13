@@ -1,0 +1,18 @@
+{application, rawfilesvr,
+ [
+  {description, "Actually, this is the game server(directory/world)"},
+  {vsn, "0.1.0"},
+  {registered, [rawfilesvr_sup]},
+	{modules, 
+		[dsvr, wsvr, dir, world, funs, sup_server
+			,rawfilesvr_sup
+			,rawfilesvr_app
+		]
+	},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { rawfilesvr_app, []}},
+  {env, []}
+ ]}.
