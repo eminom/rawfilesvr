@@ -36,6 +36,10 @@ for my$l("w","d"){
 # But since wsvr and dsvr interact with sup_server
 # We need to altar our test method.
 
+# First, we need to compile sup_server
+system "erlc sup_server.erl";
+die if $?;
+
 system "erl -pa proto -s sup_server start_link";
 die if $?;
 
